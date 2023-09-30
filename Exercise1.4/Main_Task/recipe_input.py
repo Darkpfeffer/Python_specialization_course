@@ -1,5 +1,4 @@
 import pickle
-import os
 
 def take_recipe():
     recipe_name = str(input("Enter the name of the recipe: "))
@@ -39,7 +38,7 @@ def take_recipe():
     return recipe
 
 #user inputs the desired file name
-user_file = input("Enter the name of the file: ")
+user_file = input("Enter storage file name: ")
 
 #a new data variable will be created after error occurence 
 new_data = {
@@ -48,12 +47,11 @@ new_data = {
     }
 
 try:
-    with open(user_file, 'rb') as my_file:
-        data = pickle.load(my_file)
-    print(data)
+    with open(user_file, 'rb') as recipe_storage:
+        data = pickle.load(recipe_storage)
 
 except FileNotFoundError:
-    print("File is not found")
+    print("File does not exist")
     data = new_data
 
 except:
@@ -61,7 +59,7 @@ except:
     data = new_data
 
 else:
-    my_file.close()
+    recipe_storage.close()
 
 finally:
     recipes_list = [] 
@@ -99,7 +97,7 @@ data = {
 }
 
 #Adding the new data variable to the storage file
-with open(user_file, 'wb') as my_file:
-    pickle.dump(data, my_file)
+with open(user_file, 'wb') as recipe_storage:
+    pickle.dump(data, recipe_storage)
     print("----------------------------------------")
     print("The recipes are added to the file.")
