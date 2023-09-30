@@ -14,22 +14,24 @@ def take_recipe():
         'ingredients': ingredients
     }
     for ingredient in recipe["ingredients"]:
-        if ingredient in ingredients_list:
+        if ingredient.lower() in ingredients_list:
             continue
         else:
-            ingredients_list.append(ingredient)
+            ingredients_list.append(ingredient.lower())
 
-            
-    if (int(recipe["cooking_time"]) < 10) and (int(len(recipe["ingredients"])) < 4):
+    recipe_time = recipe["cooking_time"] 
+    recipe_length = len(recipe["ingredients"])
+
+    if (recipe_time < 10) and (recipe_length < 4):
         recipe.update({'difficulty': 'Easy'})
 
-    elif (int(recipe["cooking_time"]) < 10) and (int(len(recipe["ingredients"])) >= 4):
+    elif (recipe_time < 10) and (recipe_length >= 4):
         recipe.update({'difficulty': 'Medium'})
 
-    elif (int(recipe["cooking_time"]) >= 10) and (int(len(recipe["ingredients"])) < 4):
+    elif (recipe_time >= 10) and (recipe_length < 4):
         recipe.update({'difficulty': 'Intermediate'})
 
-    elif (int(recipe["cooking_time"]) >= 10) and (int(len(recipe["ingredients"])) >= 4):
+    elif (recipe_time >= 10) and (recipe_length >= 4):
         recipe.update({'difficulty': 'Hard'})
 
     else:
