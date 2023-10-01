@@ -18,8 +18,14 @@ def search_ingredient(data):
         picked_index = int(input("Choose an ingredient (Write it's index number): "))
         ingredient_searched = all_ingredients[picked_index]
 
-    except: 
-        print("Wrong index number given")
+    except ValueError:
+        print("Input only accepts numbers. Please try again!")
+
+    except IndexError: 
+        print("Wrong index number given. Please try again!")
+    
+    except:
+        print("Something went wrong.")
 
     else:
         for recipe in data['recipes_list']:
@@ -33,12 +39,14 @@ def search_ingredient(data):
                 else:
                     continue
 
-user_file = input("Enter storage file name: ")
+user_file = input("Enter storage file name (with '.bin' extension): ")
 
 try:
     with open(user_file, 'rb') as recipe_storage:
         data = pickle.load(recipe_storage)
+except FileNotFoundError:
+        print("File has not been found. Please try again!")
 except:
-    print("File has not been found")
+    print("Something went wrong.")
 else:
     search_ingredient(data)

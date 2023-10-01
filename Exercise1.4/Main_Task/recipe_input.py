@@ -1,30 +1,11 @@
 import pickle
 
 def take_recipe():
-    recipe_name = str(input("Enter the name of the recipe: "))
+    recipe_name = input("Enter the name of the recipe: ")
     cooking_time = int(input\
         ("Enter the cooking time in minutes (accepts only numbers): "))
-    ingredients = str(input("Enter the ingredients of the recipe "\
-                "(Separate the ingredients with a comma(,) and space): ")).split(", ")
-    
-    #checking recipe difficulty
-    def calc_difficulty():
-        short_cooking_time = cooking_time < 10
-        long_cooking_time = cooking_time >= 10
-        few_ingredients = len(ingredients) < 4
-        numerous_ingredients = len(ingredients) >= 4
-
-        if short_cooking_time and few_ingredients:
-            return 'Easy'
-        
-        elif short_cooking_time and numerous_ingredients:
-            return 'Medium'
-        
-        elif long_cooking_time and few_ingredients:
-            return 'Intermediate'
-        
-        elif long_cooking_time and numerous_ingredients:
-            return 'Hard'
+    ingredients = input("Enter the ingredients of the recipe "\
+                "(Separate the ingredients with a comma(,) and space): ").split(", ")
     
     #Creating a dictionary from the inputs
     recipe = {
@@ -32,13 +13,31 @@ def take_recipe():
         'cooking_time': cooking_time,
         'ingredients': ingredients,
         #checks and adds the difficulty
-        'difficulty': calc_difficulty()
+        'difficulty': calc_difficulty(cooking_time, ingredients)
     }
-
     return recipe
 
+#checking recipe difficulty
+def calc_difficulty(cooking_time, ingredients):
+    short_cooking_time = cooking_time < 10
+    long_cooking_time = cooking_time >= 10
+    few_ingredients = len(ingredients) < 4
+    numerous_ingredients = len(ingredients) >= 4
+
+    if short_cooking_time and few_ingredients:
+        return 'Easy'
+        
+    elif short_cooking_time and numerous_ingredients:
+        return 'Medium'
+        
+    elif long_cooking_time and few_ingredients:
+        return 'Intermediate'
+        
+    elif long_cooking_time and numerous_ingredients:
+        return 'Hard'
+    
 #user inputs the desired file name
-user_file = input("Enter storage file name: ")
+user_file = input("Enter storage file name (with '.bin' extension): ")
 
 #a new data variable will be created after error occurence 
 new_data = {
@@ -51,11 +50,11 @@ try:
         data = pickle.load(recipe_storage)
 
 except FileNotFoundError:
-    print("File does not exist")
+    print("File does not exist. Creating a new storage.")
     data = new_data
 
 except:
-    print("Some error occured")
+    print("Some error occured. Creating a new storage.")
     data = new_data
 
 else:
@@ -68,7 +67,8 @@ finally:
     all_ingredients = []
     all_ingredients.extend(data['all_ingredients'])
 
-recipe_counter = input("How many recipes would you like to add?: ")
+recipe_counter = input(\
+    "How many recipes would you like to add? (Write numbers only):  ")
 
 i = 0
 while i < int(recipe_counter):
