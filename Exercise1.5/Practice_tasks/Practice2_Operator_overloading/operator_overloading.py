@@ -30,15 +30,9 @@ class Height(object):
         output_inches = subtract_height_inches - (output_feet * 12)
 
         return Height(output_feet, output_inches)
-
-person_A_height = Height(5, 10)
-person_B_height = Height(4, 10)
-height_sum = person_A_height + person_B_height
-
+    
 person_C_height = Height(3, 9)
 person_D_height = Height(5, 10)
 height_sub = person_D_height - person_C_height
 
-print("Total height:", height_sum)
-print("-----------------------------")
 print("Subtracted height:", height_sub)
