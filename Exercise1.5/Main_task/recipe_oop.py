@@ -1,36 +1,29 @@
-class Recipe(object):
+class Recipe():
     all_ingredients = []
     def __init__(self, name, cooking_time):
-        self.name = str(name)
-        self.cooking_time = int(cooking_time)
+        self._name = str(name)
+        self._cooking_time = int(cooking_time)
         self.ingredients = []
-        self.difficulty = ""
+        self._difficulty = ""
         self.calculate_difficulty()
 
-    def get_name(self):
-        print("------------------------------------")
-        print("\nRecipe:", self.name)
-        print("------------------------------------")
+    @property
+    def name(self):
+        return self._name
 
-
-    def get_cooking_time(self):
-        print("------------------------------------")
-        print("\nCooking Time:", self.cooking_time)
-        print("------------------------------------")
-
+    @property
+    def cooking_time(self):
+        return self._cooking_time
+    
     def get_ingredients(self):
-        print("------------------------------------")
-        print('\nIngredients: ')
-        for ingredient in self.ingredients:
-            print(ingredient)
-        print("------------------------------------")
+        output = ", ".join(self.ingredients)
+        return output
 
-    def get_difficulty(self):
-        if len(self.difficulty) < 1:
+    @property
+    def difficulty(self):
+        if len(self._difficulty) < 1:
             self.calculate_difficulty()
-        print("------------------------------------")
-        print("\nDifficulty:", self.difficulty)
-        print("------------------------------------")
+        return self._difficulty
 
         
 
@@ -42,34 +35,36 @@ class Recipe(object):
         self.calculate_difficulty()
             
         self.update_all_ingredients()
-
+    
     def calculate_difficulty(self):
-        short_cooking_time = self.cooking_time < 10
-        long_cooking_time = self.cooking_time >= 10
+        short_cooking_time = self._cooking_time < 10
+        long_cooking_time = self._cooking_time >= 10
         few_ingredients = len(self.ingredients) < 4
         numerous_ingredients = len(self.ingredients) >= 4
 
         if short_cooking_time and few_ingredients:
-            self.difficulty = "Easy"
+            self._difficulty = "Easy"
         elif short_cooking_time and numerous_ingredients:
-            self.difficulty = "Medium"
+            self._difficulty = "Medium"
         elif long_cooking_time and few_ingredients:
-            self.difficulty = "Intermediate"
+            self._difficulty = "Intermediate"
         elif long_cooking_time and numerous_ingredients:
-            self.difficulty = "Hard"
+            self._difficulty = "Hard"
 
     def search_ingredient(self, ingredient):
-        if ingredient in self.ingredients:
+        if ingredient.lower() in self.ingredients:
             return True
         else:
             return False
 
-    def set_cooking_time(self, cooking_time):
-        self.cooking_time = int(cooking_time)
+    @cooking_time.setter
+    def cooking_time(self, new_cooking_time):
+        self._cooking_time = int(new_cooking_time)
         self.calculate_difficulty()
 
-    def set_name(self, name):
-        self.name = str(name)
+    @name.setter
+    def name(self, name):
+        self._name = str(name)
 
     def update_all_ingredients(self):
         for ingredient in self.ingredients:
@@ -79,25 +74,20 @@ class Recipe(object):
     def recipe_search(data, search_term):
         printed_recipes= []
         for recipe in data:
-            check_ingredients = []
-
             for search_item in search_term:
                 if recipe.search_ingredient(search_item.lower()) == True:
-                    check_ingredients.append("True")
-            if len(check_ingredients) == len(search_term):
-                print(recipe)
-                printed_recipes.append(recipe.name)
+                    print(recipe)
+                    printed_recipes.append(recipe.name)
+                    break          
+
         if len(printed_recipes) < 1:
             print("No recipes found.")
 
-
-
     def __str__(self):
-        ingredient_list = ' - ' + '\n - '.join(self.ingredients)
         output = "\nRecipe: "+ self.name + \
                     "\nCooking Time (in minutes): " + str(self.cooking_time) + \
                     "\nDifficulty: " + self.difficulty + \
-                    "\nIngredients: \n" + ingredient_list
+                    "\nIngredients: \n" + self.get_ingredients()
         return output
 
 recipe1 = Recipe('Tea', 5)
