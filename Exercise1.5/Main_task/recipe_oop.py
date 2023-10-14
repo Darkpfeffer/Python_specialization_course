@@ -72,16 +72,13 @@ class Recipe():
                 self.all_ingredients.append(ingredient)
 
     def recipe_search(data, search_term):
-        printed_recipes= []
         for recipe in data:
-            for search_item in search_term:
-                if recipe.search_ingredient(search_item.lower()) == True:
+            if recipe._name in printed_recipes:
+                continue
+            else:
+                if recipe.search_ingredient(search_term.lower()) == True:
                     print(recipe)
                     printed_recipes.append(recipe.name)
-                    break          
-
-        if len(printed_recipes) < 1:
-            print("No recipes found.")
 
     def __str__(self):
         output = "\nRecipe: "+ self.name + \
@@ -113,4 +110,10 @@ search_criteria = ["Water", "Sugar", "Bananas"]
 print("--------------------------------")
 print("Searching for recipes: ")
 
-Recipe.recipe_search(recipes_list, search_criteria)
+printed_recipes= []
+
+for search_term in search_criteria:
+    Recipe.recipe_search(recipes_list, search_term)
+
+if len(printed_recipes) < 1:
+    print("No recipes found.")
