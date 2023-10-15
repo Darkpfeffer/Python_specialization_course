@@ -1,6 +1,5 @@
 class Recipe():
     all_ingredients = []
-    printed_recipes= []
     def __init__(self, name, cooking_time):
         self._name = str(name)
         self._cooking_time = int(cooking_time)
@@ -72,12 +71,10 @@ class Recipe():
             if not ingredient in self.all_ingredients:
                 self.all_ingredients.append(ingredient)
 
-    def recipe_search(data, search_term):
+    def recipe_search(self, data, search_term):
         for recipe in data:
-            if not recipe._name in Recipe.printed_recipes:
-                if recipe.search_ingredient(search_term.lower()) == True:
-                    print(recipe)
-                    Recipe.printed_recipes.append(recipe.name)
+            if recipe.search_ingredient(search_term.lower()) == True:
+                print(recipe)
 
     def __str__(self):
         output = "\nRecipe: "+ self.name + \
@@ -110,8 +107,4 @@ print("--------------------------------")
 print("Searching for recipes: ")
 
 for search_term in search_criteria:
-    Recipe.recipe_search(recipe_list, search_term)
-
-if len(Recipe.printed_recipes) < 1:
-    print("No recipes found.")
-Recipe.printed_recipes = []
+    recipe1.recipe_search(recipe_list, search_term)
