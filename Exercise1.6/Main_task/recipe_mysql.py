@@ -23,7 +23,32 @@ def main_menu(conn, cursor):
 
     def create_recipe(conn, cursor):
         print("\nCreating a recipe...\n")
+        name = input("Name of the Recipe: ")
+        cooking_time = input("Cooking Time (in minutes, input integers only): ")
+        try:
+            int(cooking_time)
+        except ValueError:
+            print("Your can enter only integers for cooking time.")
+            create_recipe(conn, cursor)
+        else:
+            cooking_time = int(cooking_time)
 
+            ingredients = input(\
+                "Ingredients of the recipe (separate them with comma(,) and space ( ): "\
+                    ).split(", ")
+            
+            difficulty = calculate_difficulty(cooking_time, ingredients)
+
+            ingredients_string = ", ".join(ingredients)
+
+            sql_input = "INSERT INTO Recipes (name, ingredients, cooking_time, difficulty)" +\
+            " VALUES ('" + name + "', '" + ingredients_string +"', '" + str(cooking_time) +\
+            "', '" + difficulty + "')"
+
+            cursor.execute(sql_input)
+            
+            conn.commit()
+        
     def search_recipe(conn, cursor):
         print("\nSearching a recipe...\n")
 
@@ -32,6 +57,24 @@ def main_menu(conn, cursor):
 
     def delete_recipe(conn, cursor):
         print("\nDeleting a recipe...\n")
+
+    def calculate_difficulty(cooking_time, ingredients):
+        short_cooking_time = cooking_time < 10
+        long_cooking_time = cooking_time >= 10
+        few_ingredients = len(ingredients) < 4
+        numerous_ingredients = len(ingredients) >= 4
+
+        if short_cooking_time and few_ingredients:
+            return "Easy"
+        elif short_cooking_time and numerous_ingredients:
+            return "Medium"
+        elif long_cooking_time and few_ingredients:
+            return "Intermediate"
+        elif long_cooking_time and numerous_ingredients:
+            return "Hard"
+        else:
+            print("Difficulty could not been calculated.")
+
 
     while(choice != 'quit'):
         print("\nWhat would you like to do? Pick a choice!")
@@ -43,21 +86,22 @@ def main_menu(conn, cursor):
         choice = input("Your choice: ")
 
         if choice == '1':
-            create_recipe('conn', 'cursor')
+            create_recipe(conn, cursor)
 
         elif choice == '2':
-            search_recipe('conn', 'cursor')
+            search_recipe(conn, cursor)
 
         elif choice == '3':
-            update_recipe('conn', 'cursor')
+            update_recipe(conn, cursor)
 
         elif choice == '4':
-            delete_recipe('conn', 'cursor')
+            delete_recipe(conn, cursor)
 
         elif choice == 'quit':
             print('Exiting the program...')
 
         else:
             print('\nWrong input entered. Returning to main menu...\n')
+            conn.close()
 
 main_menu(conn, cursor)
