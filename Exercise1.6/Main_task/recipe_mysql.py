@@ -79,12 +79,12 @@ def main_menu(conn, cursor):
             cursor.execute("SELECT * FROM Recipes WHERE ingredients LIKE '%" +\
                            all_ingredients[search_ingredient] + "%'")
             results = cursor.fetchall()
-            for column in results:
+            for recipe in results:
                 print("-------------------------------")
-                print("\nRecipe name:", column[1])
-                print("Cooking time (in minutes):", column [3])
-                print("Difficulty:", column[4])
-                ingredient_list = column[2].split(", ")
+                print("\nRecipe name:", recipe[1])
+                print("Cooking time (in minutes):", recipe[3])
+                print("Difficulty:", recipe[4])
+                ingredient_list = recipe[2].split(", ")
                 print("Ingredients:")
                 for ingredient in ingredient_list:
                     print(ingredient)
@@ -93,6 +93,91 @@ def main_menu(conn, cursor):
     def update_recipe(conn, cursor):
         print("\nUpdating a recipe...\n")
 
+        cursor.execute("SELECT * FROM Recipes")
+        results = cursor.fetchall()
+        
+        for recipe in results:
+            print("---------------------------")
+            print('Recipe ID:', recipe[0])
+            print('Recipe name:', recipe[1])
+            print('Cooking Time (in minutes):', recipe[3])
+            print("Difficulty:", recipe[4])
+            ingredient_list = recipe[2].split(", ")
+            print("Ingredients:")
+            for ingredient in ingredient_list:
+                print(ingredient)
+            print("-------------------------------")
+
+        recipe_to_update = input("\nInput the ID of the recipe to update: ")
+
+        try:
+            int(recipe_to_update)
+        except ValueError:
+            print("Only numbers are allowed. Try again!")
+        else:
+            print('1. name')
+            print('2. cooking_time')
+            print('3. ingredients')
+            column_to_update = input(\
+                "\nWrite the index of the column you would like to update: ")
+            
+            try:
+                column_to_update = int(column_to_update)
+            except ValueError:
+                ("\nYou can input only numbers here. Try again!")
+            else:
+                if column_to_update == 1:
+                    change_value = input(\
+                        "\nWrite the new recipe name: ")
+                    cursor.execute("UPDATE Recipes SET name = '" +\
+                                   change_value + "' WHERE id = " +\
+                                   recipe_to_update)
+                elif column_to_update == 2:
+                    change_value = input(\
+                        "\nWrite the new cooking time: ")
+                    try:
+                        int(change_value)
+                    except ValueError:
+                        ("\nYou can input only numbers here. Try again!")
+                    else:
+                        cursor.execute("SELECT * FROM Recipes WHERE id = " +\
+                                       recipe_to_update)
+                        results = cursor.fetchall()
+                        ingredient_list = []
+                        for recipe in results:
+                            ingredient_list = recipe[2].split(", ")
+                        difficulty = \
+                            calculate_difficulty(int(change_value), ingredient_list)
+
+                        cursor.execute("UPDATE Recipes SET cooking_time = '" +\
+                                   change_value + "', difficulty = '" + difficulty +\
+                                    "' WHERE id = " +\
+                                   recipe_to_update)
+                elif column_to_update == 3:
+                    change_value = input(\
+                        "\nWrite the new ingredients (separate them with comma(,)" +\
+                            "and space ( )): ")
+                    cursor.execute("SELECT * FROM Recipes WHERE id = " +\
+                                       recipe_to_update)
+                    cooking_time = ""
+                    results = cursor.fetchall()
+
+                    for recipe in results:
+                        cooking_time = recipe[3]
+
+                    ingredient_list = change_value.split(", ")
+                    
+                    difficulty = calculate_difficulty(int(cooking_time), ingredient_list)
+
+                    cursor.execute("UPDATE Recipes SET ingredients = '" +\
+                                   change_value + "', difficulty = '" + difficulty +\
+                                    "' WHERE id = " +\
+                                   recipe_to_update)
+                else:
+                    print("Invalid index has been inputted. Try again!")
+                    
+                conn.commit()
+                
     def delete_recipe(conn, cursor):
         print("\nDeleting a recipe...\n")
 
