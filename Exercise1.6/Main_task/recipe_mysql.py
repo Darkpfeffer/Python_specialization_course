@@ -23,6 +23,7 @@ def main_menu(conn, cursor):
 
     def create_recipe(conn, cursor):
         print("\nCreating a recipe...\n")
+
         name = input("Name of the Recipe: ")
         cooking_time = input("Cooking Time (in minutes, input integers only): ")
         try:
@@ -51,6 +52,43 @@ def main_menu(conn, cursor):
         
     def search_recipe(conn, cursor):
         print("\nSearching a recipe...\n")
+
+        cursor.execute("SELECT ingredients FROM Recipes;")
+        results = cursor.fetchall()
+
+        all_ingredients = []
+
+        for reicpe in results:
+            for ingredients in reicpe:
+                ingredient_list = ingredients.split(", ")
+                for ingredient in ingredient_list:
+                    lowercase_ingredient = ingredient.lower() 
+                    if not lowercase_ingredient in all_ingredients:
+                        all_ingredients.append(lowercase_ingredient)
+
+        for ingredient in all_ingredients:
+            print(all_ingredients.index(ingredient), ingredient)
+
+        search_ingredient = input(\
+            "Choose the index of the ingredient you are looking for: ")
+        try:
+            search_ingredient = int(search_ingredient)
+        except ValueError:
+            print("You can input only numbers here. Try again.")
+        else:
+            cursor.execute("SELECT * FROM Recipes WHERE ingredients LIKE '%" +\
+                           all_ingredients[search_ingredient] + "%'")
+            results = cursor.fetchall()
+            for column in results:
+                print("-------------------------------")
+                print("\nRecipe name:", column[1])
+                print("Cooking time (in minutes):", column [3])
+                print("Difficulty:", column[4])
+                ingredient_list = column[2].split(", ")
+                print("Ingredients:")
+                for ingredient in ingredient_list:
+                    print(ingredient)
+                print("-------------------------------")
 
     def update_recipe(conn, cursor):
         print("\nUpdating a recipe...\n")
@@ -99,9 +137,9 @@ def main_menu(conn, cursor):
 
         elif choice == 'quit':
             print('Exiting the program...')
+            conn.close()
 
         else:
             print('\nWrong input entered. Returning to main menu...\n')
-            conn.close()
 
 main_menu(conn, cursor)
