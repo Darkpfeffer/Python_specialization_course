@@ -47,6 +47,8 @@ def main_menu(conn, cursor):
             "', '" + difficulty + "')"
 
             cursor.execute(sql_input)
+
+            print("\n Recipe " + name + " is successfully created.")
             
             conn.commit()
         
@@ -132,13 +134,18 @@ def main_menu(conn, cursor):
                     cursor.execute("UPDATE Recipes SET name = '" +\
                                    change_value + "' WHERE id = " +\
                                    recipe_to_update)
+                    print("\n Recipe name is successfully updated.")
+
                 elif column_to_update == 2:
                     change_value = input(\
                         "\nWrite the new cooking time: ")
+                    
                     try:
                         int(change_value)
+
                     except ValueError:
                         ("\nYou can input only numbers here. Try again!")
+
                     else:
                         cursor.execute("SELECT * FROM Recipes WHERE id = " +\
                                        recipe_to_update)
@@ -153,6 +160,9 @@ def main_menu(conn, cursor):
                                    change_value + "', difficulty = '" + difficulty +\
                                     "' WHERE id = " +\
                                    recipe_to_update)
+                        
+                        print("\nRecipe cooking time is successfully updated.")
+
                 elif column_to_update == 3:
                     change_value = input(\
                         "\nWrite the new ingredients (separate them with comma(,)" +\
@@ -173,8 +183,10 @@ def main_menu(conn, cursor):
                                    change_value + "', difficulty = '" + difficulty +\
                                     "' WHERE id = " +\
                                    recipe_to_update)
+                    
+                    print("\n Recipe ingredients are successfully updated.")
                 else:
-                    print("Invalid index has been inputted. Try again!")
+                    print("\nInvalid index has been inputted. Try again!")
                     
                 conn.commit()
                 
@@ -205,7 +217,7 @@ def main_menu(conn, cursor):
         else:
             cursor.execute("DELETE FROM Recipes WHERE id = '" + recipe_to_delete + "'")
 
-            print("\nRecipe ID 4 is successfully deleted.")
+            print("\nRecipe ID "+ recipe_to_delete +" is successfully deleted.")
 
             conn.commit()
 
