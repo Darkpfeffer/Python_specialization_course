@@ -181,6 +181,36 @@ def main_menu(conn, cursor):
     def delete_recipe(conn, cursor):
         print("\nDeleting a recipe...\n")
 
+        cursor.execute("SELECT * FROM Recipes")
+        results = cursor.fetchall()
+        
+        for recipe in results:
+            print("---------------------------")
+            print('Recipe ID:', recipe[0])
+            print('Recipe name:', recipe[1])
+            print('Cooking Time (in minutes):', recipe[3])
+            print("Difficulty:", recipe[4])
+            ingredient_list = recipe[2].split(", ")
+            print("Ingredients:")
+            for ingredient in ingredient_list:
+                print(ingredient)
+            print("-------------------------------")
+
+        recipe_to_delete = input("\nInput the ID of the recipe to delete: ")
+
+        try:
+            int(recipe_to_delete)
+        except ValueError:
+            print("Only numbers are allowed. Try again!")
+        else:
+            cursor.execute("DELETE FROM Recipes WHERE id = '" + recipe_to_delete + "'")
+
+            print("\nRecipe ID 4 is successfully deleted.")
+
+            conn.commit()
+
+        
+
     def calculate_difficulty(cooking_time, ingredients):
         short_cooking_time = cooking_time < 10
         long_cooking_time = cooking_time >= 10
