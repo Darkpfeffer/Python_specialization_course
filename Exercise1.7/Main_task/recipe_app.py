@@ -25,8 +25,8 @@ class Recipe(Base):
     
     def __str__(self):
         print("\n" + "-"*20)
-        print("Recipe Name: " + self.name + "\tRecipe ID: " + self.id)
-        print("Cooking Time: " + self.cooking_time + "\nDifficulty: " + self.difficulty)
+        print("Recipe name: " + self.name + "\tRecipe ID: " + self.id)
+        print("Cooking time: " + self.cooking_time + "\nDifficulty: " + self.difficulty)
         print("Ingredients: ")
         for ingredient in self.ingredients.split(", "):
             print("- " + ingredient)
@@ -56,3 +56,41 @@ class Recipe(Base):
             return self.ingredients.split(", ")
     
 Base.metadata.create_all(engine)
+
+def create_recipe():
+    name = input("Enter the name of the recipe (maximal 50 characters): ")
+    if len(name) > 50:
+        print("\n Error: Recipe name can only be 50 characters long.")
+        return
+    
+    cooking_time = input("Enter cooking time in minutes (accepts only numbers): ")
+    if not cooking_time.isnumeric():
+        print("\nError: Cooking time can only contain numbers")
+        return
+    
+    ingredients = []
+    
+    number_of_ingredients = input("How many ingredients would you like to add?")
+    if not number_of_ingredients.isnumeric():
+        print("\n Error: Ingredient number can contain only numbers.")
+        return
+
+    i = 0
+    while i > number_of_ingredients:
+        ingredient_to_add = input("Enter the name of the ingredient: ")
+        ingredients.append(ingredient_to_add)
+
+    ingredients = ", ".join(ingredients)
+    if len(ingredients) > 255:
+        print("Error: ingredients accepts maximum 255 characters" + 
+              " (Characters of ingredient + 2 at every ingredient)")
+        return
+    
+    recipe_entry = Recipe(
+        name = name,
+        cooking_time = cooking_time,
+        ingredients = ingredients,
+        difficulty = recipe_entry.calculate_difficulty()
+    )
+
+    session.add(recipe_entry)
