@@ -94,3 +94,14 @@ def create_recipe():
     )
 
     session.add(recipe_entry)
+
+def view_all_recipes():
+    all_recipes = session.query(Recipe).all()
+
+    if session.query(Recipe).count() == 0:
+        print("There is no recipes in the database.")
+        return None
+    
+    for recipe in all_recipes:
+        print(recipe)
+    
