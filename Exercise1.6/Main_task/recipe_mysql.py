@@ -238,7 +238,7 @@ def main_menu(conn, cursor):
         elif long_cooking_time and numerous_ingredients:
             return "Hard"
         else:
-            print("Difficulty could not been calculated.")
+            print("Difficulty could not be calculated.")
 
 
     while(choice != 'quit'):
