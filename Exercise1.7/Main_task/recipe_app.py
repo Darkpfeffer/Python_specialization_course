@@ -78,7 +78,7 @@ def create_recipe():
     i = 0
     while i > number_of_ingredients:
         ingredient_to_add = input("Enter the name of the ingredient: ")
-        ingredients.append(ingredient_to_add)
+        ingredients.append(ingredient_to_add.lower())
 
     ingredients = ", ".join(ingredients)
     if len(ingredients) > 255:
@@ -105,3 +105,47 @@ def view_all_recipes():
     for recipe in all_recipes:
         print(recipe)
     
+def search_by_ingredients():
+    if session.query(Recipe).count() == 0:
+        print("There is no recipes in the database.")
+        return None
+    
+    results = []
+    
+    for recipe in session.query(Recipe).all():
+        results.extend(recipe.ingredients.split(", "))
+  
+    all_ingredients = []
+  
+    for ingredient in results:
+        if not ingredient in all_ingredients:
+            all_ingredients.append(ingredient)
+
+    for ingredient in all_ingredients:
+        print(all_ingredients.index(ingredient) + 1, "- " + ingredient)
+
+    chosen_ingredient = input("Choose the indexes of the ingredients" + 
+                               " you would like to search (separate them with a comma (,)" +
+                                 " and a space ( ) ): ").split(", ")
+    
+    for index in chosen_ingredient:
+        if not index.isnumeric():
+            print("You can only input numbers.")
+            return
+        if index > len(chosen_ingredient):
+            print("You can only select index numbers from the list")
+            return
+    
+    search_ingredients = []
+
+    for index in chosen_ingredient:
+        search_ingredients.append(all_ingredients[index-1])
+
+    conditions = []
+
+    for ingredient in search_ingredients:
+        like_term = "%" + ingredient + "%"
+        conditions.append(Recipe.ingredients.like(like_term))
+
+    for recipe in session.query(Recipe).filter(conditions).all():
+        print(recipe)
