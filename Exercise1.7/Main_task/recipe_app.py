@@ -35,8 +35,8 @@ class Recipe(Base):
     def calculate_difficulty(self, cooking_time, ingredients):
         short_cooking_time = cooking_time < 10
         long_cooking_time = cooking_time >= 10
-        few_ingredients = len(ingredients) < 4
-        numerous_ingredients = len(ingredients) >= 4
+        few_ingredients = len(ingredients.split(", ")) < 4
+        numerous_ingredients = len(ingredients.split(", ")) >= 4
 
         if short_cooking_time and few_ingredients:
             self.difficulty =  "Easy"
@@ -149,3 +149,72 @@ def search_by_ingredients():
 
     for recipe in session.query(Recipe).filter(conditions).all():
         print(recipe)
+
+def edit_recipe():
+    if session.query(Recipe).count() == 0:
+        return
+    else:
+        results = []
+        for recipe in session.query(Recipe).all():
+            results.append(recipe.id + " - " + recipe.name)
+        
+        for recipe in results:
+            print(recipe)
+
+    chosen_recipe = input("Enter the ID of the recipe: ")
+
+    if not chosen_recipe.isnumeric():
+        print("You can only enter numbers.")
+        return
+    if not results.like("%" + chosen_recipe+ "%"):
+        print("You can only enter numbers from the list.")
+        return
+    
+    recipe_to_edit = session.query(Recipe).filter(Recipe.id.like("%" + chosen_recipe + "%"))
+
+    print("1 - Recipe name: " + recipe_to_edit.name + "\n" + 
+          "2 - Cooking time: " + recipe_to_edit.cooking_time +
+          "3 - Ingredients: ")
+    
+    for ingredient in recipe_to_edit.ingredients.split(", "):
+        print("- " + ingredient) 
+
+    chosen_attribute = input("Enter the index of the recipe information you would like" + 
+                             "to update: ")
+    if not chosen_attribute.isnumeric():
+        print("You can only enter numbers.")
+        return
+    if int(chosen_attribute) > 3 or int(chosen_attribute) < 1:
+        print("You can only enter numbers from the list.")
+        return
+    
+    if chosen_attribute == "1":
+        new_name = input("Enter the new recipe name (maximal 50 characters): ")
+        if len(new_name) > 50:
+            print("The new name can only be maximal 50 characters long.")
+            return
+        else:
+            session.query(Recipe).filter(Recipe.name == recipe_to_edit.name).update(\
+                {Recipe.name: new_name})
+    
+    elif chosen_attribute == "2":
+        new_cooking_time = input("Enter new cooking time in minutes (numbers only): ")
+        if not new_cooking_time.isnumeric():
+            print("The new cooking time must be a number.")
+            return
+        else:
+            session.query(Recipe).filter(Recipe.name == recipe_to_edit.name).update(\
+                {Recipe.cooking_time: new_cooking_time})
+            recipe_to_edit.calculate_difficulty(new_cooking_time, recipe_to_edit.ingredients)
+    elif chosen_attribute == "3":
+        new_ingredients = input("Enter the new recipe ingredients (maximal 255 characters)" + 
+                                "(separate them with comma(,) and space ( )): ")
+        if len(new_ingredients) > 255:
+            print("The new name can only be maximal 255 characters long.")
+            return
+        else:
+            session.query(Recipe).filter(Recipe.name == recipe_to_edit.name).update(\
+                {Recipe.ingredients: new_ingredients})
+            recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, new_ingredients)
+
+    session.commit()
