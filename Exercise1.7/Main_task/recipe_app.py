@@ -80,7 +80,6 @@ def create_recipe():
         ingredients.append(ingredient_to_add.lower())
 
         temporary_ingredients = ", ".join(ingredients)
-        print(temporary_ingredients)
         if i < int(number_of_ingredients) - 2:
             print("Remaining characters: " + str(255 - len(temporary_ingredients) - 2))
         elif i < int(number_of_ingredients) - 1:
@@ -142,7 +141,7 @@ def search_by_ingredients():
         if not index.isnumeric():
             print("You can only input numbers. Returning to main menu.")
             return
-        elif int(index) > len(all_ingredients):
+        elif 1 > int(index) or int(index) > len(all_ingredients):
             print("You can only select index numbers from the list. Returning to main menu.")
             return
     
@@ -192,7 +191,7 @@ def edit_recipe():
     
     print("\n" + "-" * 20)
 
-    chosen_attribute = input("Enter the index of the recipe information you would like" + 
+    chosen_attribute = input("Enter the index of the recipe information you would like " + 
                              "to update: ")
     if not chosen_attribute.isnumeric():
         print("You can only enter numbers. Returning to main menu.")
