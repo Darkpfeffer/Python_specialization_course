@@ -24,13 +24,9 @@ class Recipe(Base):
         return "<Recipe ID: " + self.id + " - " + self.name +", " + self.difficulty + ">"
     
     def __str__(self):
-        print("\n" + "-"*20)
-        print("Recipe name: " + self.name + "\tRecipe ID: " + self.id)
-        print("Cooking time: " + self.cooking_time + "\nDifficulty: " + self.difficulty)
-        print("Ingredients: ")
-        for ingredient in self.ingredients.split(", "):
-            print("- " + ingredient)
-        print("-"*20 + "\n")
+        return "\n" + "-"*20 + "\nRecipe name: " + self.name + "\tRecipe ID: " + str(self.id) +\
+        "\n\nCooking time: " + str(self.cooking_time) + "\t\tDifficulty: " + self.difficulty +\
+        "\n\nIngredients: " + self.ingredients + "\n" + "-"*20 + "\n"
 
     def calculate_difficulty(self, cooking_time, ingredients):
         short_cooking_time = cooking_time < 10
@@ -60,46 +56,59 @@ Base.metadata.create_all(engine)
 def create_recipe():
     name = input("Enter the name of the recipe (maximal 50 characters): ")
     if len(name) > 50:
-        print("\n Error: Recipe name can only be 50 characters long.")
+        print("\n Error: Recipe name can only be 50 characters long. Returning to main menu.")
         return
     
     cooking_time = input("Enter cooking time in minutes (accepts only numbers): ")
     if not cooking_time.isnumeric():
-        print("\nError: Cooking time can only contain numbers")
+        print("\nError: Cooking time can only contain numbers. Returning to main menu.")
         return
     
     ingredients = []
     
-    number_of_ingredients = input("How many ingredients would you like to add?")
+    number_of_ingredients = input("How many ingredients would you like to add? ")
     if not number_of_ingredients.isnumeric():
-        print("\n Error: Ingredient number can contain only numbers.")
+        print("\n Error: Ingredient number can contain only numbers. Returning to main menu.")
         return
 
     i = 0
-    while i > number_of_ingredients:
+    temporary_ingredients = ""
+
+    while i < int(number_of_ingredients):
         ingredient_to_add = input("Enter the name of the ingredient: ")
         ingredients.append(ingredient_to_add.lower())
+
+        temporary_ingredients = ", ".join(ingredients)
+        print(temporary_ingredients)
+        if i < int(number_of_ingredients) - 2:
+            print("Remaining characters: " + str(255 - len(temporary_ingredients) - 2))
+        elif i < int(number_of_ingredients) - 1:
+            print("Remaining characters: " + str(255 - len(temporary_ingredients)))
+
+        i += 1
 
     ingredients = ", ".join(ingredients)
     if len(ingredients) > 255:
         print("Error: ingredients accepts maximum 255 characters" + 
-              " (Characters of ingredient + 2 at every ingredient)")
+              " (Characters of ingredient + 2 at every ingredient). Returning to main menu.")
         return
     
     recipe_entry = Recipe(
         name = name,
         cooking_time = cooking_time,
-        ingredients = ingredients,
-        difficulty = recipe_entry.calculate_difficulty()
+        ingredients = ingredients
     )
 
+    recipe_entry.calculate_difficulty(int(cooking_time), (ingredients))
+
     session.add(recipe_entry)
+    session.commit()
 
 def view_all_recipes():
     all_recipes = session.query(Recipe).all()
 
     if session.query(Recipe).count() == 0:
-        print("There is no recipes in the database.")
+        print("There is no recipes in the database.  Returning to main menu.")
         return None
     
     for recipe in all_recipes:
