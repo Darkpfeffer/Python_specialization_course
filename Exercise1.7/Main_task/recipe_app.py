@@ -21,7 +21,8 @@ class Recipe(Base):
     difficulty = Column(String(20))
 
     def __repr__(self):
-        return "<Recipe ID: " + self.id + " - " + self.name +", " + self.difficulty + ">"
+        return "<Recipe ID: " + str(self.id) + " - " + self.name +", " +\
+        "Difficulty: " + self.difficulty + ">"
     
     def __str__(self):
         return "\n" + "-"*20 + "\nRecipe name: " + self.name + "\tRecipe ID: " + str(self.id) +\
@@ -108,7 +109,7 @@ def view_all_recipes():
     all_recipes = session.query(Recipe).all()
 
     if session.query(Recipe).count() == 0:
-        print("There is no recipes in the database.  Returning to main menu.")
+        print("There is no recipes in the database. Returning to main menu.")
         return None
     
     for recipe in all_recipes:
@@ -116,7 +117,7 @@ def view_all_recipes():
     
 def search_by_ingredients():
     if session.query(Recipe).count() == 0:
-        print("There is no recipes in the database.")
+        print("There is no recipes in the database. Returning to main menu.")
         return None
     
     results = []
@@ -136,28 +137,28 @@ def search_by_ingredients():
     chosen_ingredient = input("Choose the indexes of the ingredients" + 
                                " you would like to search (separate them with a comma (,)" +
                                  " and a space ( ) ): ").split(", ")
-    
+    print(len(chosen_ingredient))
     for index in chosen_ingredient:
         if not index.isnumeric():
-            print("You can only input numbers.")
+            print("You can only input numbers. Returning to main menu.")
             return
-        if index > len(chosen_ingredient):
-            print("You can only select index numbers from the list")
+        elif int(index) > len(chosen_ingredient):
+            print("You can only select index numbers from the list. Returning to main menu.")
             return
     
     search_ingredients = []
 
     for index in chosen_ingredient:
-        search_ingredients.append(all_ingredients[index-1])
+        search_ingredients.append(all_ingredients[int(index)-1])
 
     conditions = []
 
     for ingredient in search_ingredients:
         like_term = "%" + ingredient + "%"
-        conditions.append(Recipe.ingredients.like(like_term))
-
-    for recipe in session.query(Recipe).filter(conditions).all():
-        print(recipe)
+        conditions.append(like_term)
+    for condition in conditions:
+        for recipe in session.query(Recipe).filter(Recipe.ingredients.like(condition)).all():
+            print(recipe)
 
 def edit_recipe():
     if session.query(Recipe).count() == 0:
