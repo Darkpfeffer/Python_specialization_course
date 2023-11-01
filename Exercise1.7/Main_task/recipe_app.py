@@ -251,3 +251,32 @@ def delete_recipe():
             else:
                 print("Wrong word entered. Returning to main menu.")
                 return
+
+#Main Menu            
+user_input = ""
+
+while not user_input.lower() == "quit":
+    print("\nChoose a menu:")
+    print("1 - Create a new recipe")
+    print("2 - View all recipes")
+    print("3 - Search for recipes by ingredients")
+    print("4 - Edit a recipe")
+    print("5 - Delete a recipe")
+    print("6 - Exit the application")
+
+    if user_input == "1":
+        create_recipe()
+    elif user_input == "2":
+        view_all_recipes()
+    elif user_input == "3":
+        search_by_ingredients()
+    elif user_input == "4":
+        edit_recipe()
+    elif user_input == "5":
+        delete_recipe()
+    elif user_input.lower() == "quit":
+        session.close()
+        engine.close()
+    else:
+        print("Wrong choice entered. Try again!")
+
