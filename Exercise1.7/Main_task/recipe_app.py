@@ -237,34 +237,35 @@ def delete_recipe():
         print("There is no recipes in the database. Returning to main menu.")
         return
     
-    session.query(Recipe).all()
+    recipes_list = []
+    for recipe in session.query(Recipe).all():
+        print(str(recipe.id) + " - " + recipe.name)
+        recipes_list.append(str(recipe.id) + " - " + recipe.name)
 
     recipe_to_delete = input("Enter the ID of the recipe you would like to delete (numbers only): ")
 
     if not recipe_to_delete.isnumeric():
-        print("You can only enter numbers.")
+        print("You can only enter numbers. Returning to main menu.")
+        return
+
+    if not any(recipe_to_delete in recipe for recipe in recipes_list):
+        print("Invalid recipe ID entered. Returning to main menu.")
+        return
+    
+    delete_id = session.query(Recipe).filter(Recipe.id == int(recipe_to_delete)).one()
+
+    validate_user_action = input("Are you sure you would like to delete this recipe?" + 
+                                         "(Enter 'yes' or 'no'): ")
+
+    if validate_user_action.lower() == "yes":
+        session.delete(delete_id)
+        session.commit()
+    elif validate_user_action == "no":
+        print("\nReturning to main menu.")
         return
     else:
-        delete_id = session.query(Recipe).filter(Recipe.id == int(recipe_to_delete)).one()
-
-        if delete_id.count() == 0:
-            print("Invalid recipe ID entered.")
-            return
-        else:
-            delete_id
-
-            validate_user_action = input("Are you sure you would like to delete this recipe?" + 
-                                         "(enter yes or no): ")
-
-            if validate_user_action.lower() == "yes":
-                session.delete(delete_id)
-                session.commit()
-            elif validate_user_action == "no":
-                print("\nReturning to main menu.")
-                return
-            else:
-                print("Wrong word entered. Returning to main menu.")
-                return
+        print("Wrong word entered. Returning to main menu.")
+        return
 
 #Main Menu            
 user_input = ""
