@@ -218,3 +218,36 @@ def edit_recipe():
             recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, new_ingredients)
 
     session.commit()
+
+def delete_recipe():
+    if session.query(Recipe).count() == 0:
+        return
+    else:
+        session.query(Recipe).all()
+
+    recipe_to_delete = input("Enter the ID of the recipe you would like to delete (numbers only): ")
+
+    if not recipe_to_delete.isnumeric():
+        print("You can only enter numbers.")
+        return
+    else:
+        delete_id = session.query(Recipe).filter(Recipe.id == int(recipe_to_delete)).one()
+
+        if delete_id.count() == 0:
+            print("Invalid recipe ID entered.")
+            return
+        else:
+            delete_id
+
+            validate_user_action = input("Are you sure you would like to delete this recipe?" + 
+                                         "(enter yes or no): ")
+
+            if validate_user_action.lower() == "yes":
+                session.delete(delete_id)
+                session.commit()
+            elif validate_user_action == "no":
+                print("\nReturning to main menu.")
+                return
+            else:
+                print("Wrong word entered. Returning to main menu.")
+                return
