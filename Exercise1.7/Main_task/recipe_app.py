@@ -262,7 +262,9 @@ while not user_input.lower() == "quit":
     print("3 - Search for recipes by ingredients")
     print("4 - Edit a recipe")
     print("5 - Delete a recipe")
-    print("6 - Exit the application")
+    print("quit - Exit the application")
+
+    user_input = input("\nEnter the index of a menu to continue: ")
 
     if user_input == "1":
         create_recipe()
@@ -275,8 +277,10 @@ while not user_input.lower() == "quit":
     elif user_input == "5":
         delete_recipe()
     elif user_input.lower() == "quit":
+        print("\nClosing the application")
         session.close()
-        engine.close()
+        engine.raw_connection().close()
     else:
+        print("\n"+ "-"*20)
         print("Wrong choice entered. Try again!")
-
+        print("-"*20)
