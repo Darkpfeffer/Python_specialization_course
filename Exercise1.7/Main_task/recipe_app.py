@@ -154,29 +154,26 @@ def search_by_ingredients():
 
     for ingredient in search_ingredients:
         like_term = "%" + ingredient + "%"
-        conditions.append(like_term)
-    for condition in conditions:
-        for recipe in session.query(Recipe).filter(Recipe.ingredients.like(condition)).all():
-            print(recipe)
+        conditions.append(Recipe.ingredients.like(like_term))
+    for recipe in session.query(Recipe).filter(*conditions).all():
+        print(recipe)
 
 def edit_recipe():
     if session.query(Recipe).count() == 0:
         print("There is no recipes in the database. Returning to main menu.")
         return
-    else:
-        results = []
-        for recipe in session.query(Recipe).all():
-            results.append(str(recipe.id) + " - " + recipe.name)
+    
+    results = session.query(Recipe).with_entities(Recipe.id, Recipe.name).all()
         
-        for recipe in results:
-            print(recipe)
+    for recipe in results:
+        print(recipe)
 
     chosen_recipe = input("Enter the ID of the recipe: ")
 
     if not chosen_recipe.isnumeric():
         print("You can only enter numbers. Returning to main menu.")
         return
-    if not any(chosen_recipe in result for result in results):
+    if not any(int(chosen_recipe) in result for result in results):
         print("You can only enter numbers from the list. Returning to main menu.")
         return
     
@@ -187,7 +184,7 @@ def edit_recipe():
           "\n3 - Ingredients: ")
     
     for ingredient in recipe_to_edit.ingredients.split(", "):
-        print("- " + ingredient) 
+        print("\t-" + ingredient) 
     
     print("\n" + "-" * 20)
 
@@ -206,7 +203,7 @@ def edit_recipe():
             print("The new name can only be maximal 50 characters long. Returning to main menu.")
             return
         else:
-            session.query(Recipe).filter(Recipe.name == recipe_to_edit.name).update(\
+            session.query(Recipe).filter(Recipe.id == recipe_to_edit.id).update(\
                 {Recipe.name: new_name})
     
     elif chosen_attribute == "2":
@@ -236,10 +233,10 @@ def delete_recipe():
         print("There is no recipes in the database. Returning to main menu.")
         return
     
-    recipes_list = []
-    for recipe in session.query(Recipe).all():
-        print(str(recipe.id) + " - " + recipe.name)
-        recipes_list.append(str(recipe.id) + " - " + recipe.name)
+    recipes_list = session.query(Recipe).with_entities(Recipe.id, Recipe.name).all()
+
+    for recipe in recipes_list:
+        print(recipe)
 
     recipe_to_delete = input("Enter the ID of the recipe you would like to delete (numbers only): ")
 
@@ -247,7 +244,7 @@ def delete_recipe():
         print("You can only enter numbers. Returning to main menu.")
         return
 
-    if not any(recipe_to_delete in recipe for recipe in recipes_list):
+    if not any(int(recipe_to_delete) in recipe for recipe in recipes_list):
         print("Invalid recipe ID entered. Returning to main menu.")
         return
     
