@@ -29,11 +29,11 @@ class Recipe(Base):
         "\n\nCooking time: " + str(self.cooking_time) + "\t\tDifficulty: " + self.difficulty +\
         "\n\nIngredients: " + self.ingredients + "\n" + "-"*20 + "\n"
 
-    def calculate_difficulty(self, cooking_time, ingredients):
-        short_cooking_time = cooking_time < 10
-        long_cooking_time = cooking_time >= 10
-        few_ingredients = len(ingredients.split(", ")) < 4
-        numerous_ingredients = len(ingredients.split(", ")) >= 4
+    def calculate_difficulty(self):
+        short_cooking_time = int(self.cooking_time) < 10
+        long_cooking_time = int(self.cooking_time) >= 10
+        few_ingredients = len(self.ingredients.split(", ")) < 4
+        numerous_ingredients = len(self.ingredients.split(", ")) >= 4
 
         if short_cooking_time and few_ingredients:
             self.difficulty =  "Easy"
@@ -99,7 +99,7 @@ def create_recipe():
         ingredients = ingredients
     )
 
-    recipe_entry.calculate_difficulty(int(cooking_time), (ingredients))
+    recipe_entry.calculate_difficulty()
 
     session.add(recipe_entry)
     session.commit()
@@ -215,19 +215,19 @@ def edit_recipe():
             print("The new cooking time must be a number. Returning to main menu.")
             return
         else:
-            session.query(Recipe).filter(Recipe.name == recipe_to_edit.name).update(\
+            session.query(Recipe).filter(Recipe.id == recipe_to_edit.id).update(\
                 {Recipe.cooking_time: int(new_cooking_time)})
-            recipe_to_edit.calculate_difficulty(int(new_cooking_time), recipe_to_edit.ingredients)
+            recipe_to_edit.calculate_difficulty()
     elif chosen_attribute == "3":
         new_ingredients = input("Enter the new recipe ingredients (maximal 255 characters)" + 
-                                "(separate them with comma(,) and space ( )): ")
+                                "(separate them with comma(,) and space ( )): ").lower()
         if len(new_ingredients) > 255:
             print("The new name can only be maximal 255 characters long. Returning to main menu.")
             return
         else:
-            session.query(Recipe).filter(Recipe.name == recipe_to_edit.name).update(\
+            session.query(Recipe).filter(Recipe.id == recipe_to_edit.id).update(\
                 {Recipe.ingredients: new_ingredients})
-            recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, new_ingredients)
+            recipe_to_edit.calculate_difficulty()
 
     session.commit()
 
